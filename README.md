@@ -54,4 +54,23 @@ We will evaluate you on your ability to solve the problem defined in the require
 If you have any questions regarding requirements, do not hesitate to email your contact at theScore for clarification.
 
 ### Installation and running this solution
-... TODO
+This solution implements the first three challenges, focusing on backend developement. Utilizes elasticsearch to do the heavy lifting for search and sorting. Swagger to Implement the API Framework. Written in Golang.
+
+1. Start Elasticsearch Docker container: 
+    `docker run -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" 
+docker.elastic.co/elasticsearch/elasticsearch:7.16.3`
+Note: If you do not have the elasticsearch image, run:
+`docker pull docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+`
+https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-cli-run-dev-mode
+2. Verify ES Docker is running `docker ps`. You can also view ES metadata by going to `http://localhost:9200/` in the browser
+3. Load rush.json data to ES. Inside the repo, run `go run .\controllers\load_data.go` 
+This will parse the JSON, scrub certain fields for consistency and load it into ES. ES will create a new index (nfl_players) and each player will be a document. ES will handle the mapping by default.
+You can view the documents from here: `http://localhost:9200/_search`
+4. Run `go run .\cmd\nfl-rushing-server\main.go --port 3000` to start service
+5. Filter and Sorting:
+`localhost:3000/search` will return all player stats
+`search?player_name=<some_name>` will filter player name
+`/search?sort=yds` will sort by Yds in desc order
+`/search?sort=td` will sort by Td in desc order
+`/search?sort=lng` will sort by Lng in desc order

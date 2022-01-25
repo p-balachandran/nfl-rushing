@@ -1,0 +1,164 @@
+swagger: "2.0"
+info:
+  description:
+    NFL Player Stats
+  title: nfl-rushing
+  version: 0.1.0
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /ping:
+    get:
+      description: Ping route for health checks.
+      operationId: ping
+      produces:
+        - text/plain; charset=utf-8
+      parameters: []
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+  /search:
+    get:
+      description: elasticsearch search api
+      operationId: search
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: player_name
+          type: string
+          required: false
+          description: player name to search for
+          # Example: James Robinson
+        - in: query
+          name: sort
+          required: false
+          type: string
+          description: Total Rushing Touchdowns, Longest Rush and Total Rushing Yards
+          # Example: td (or lng or yds)
+        - in: query
+          name: td
+          required: false
+          type: string
+          description: Total Rushing Touchdowns
+          # Example: asc
+        - in: query
+          name: lng
+          required: false
+          type: string
+          description: Longest Rush -- a T represents a touchdown occurred
+        - in: query
+          name: yds
+          required: false
+          type: string
+          description: Total Rushing Yards
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/SearchResponseBody"
+        "500":
+          description: Server Error
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+  /load_data:
+    get:
+      description: load json file
+      operationId: load_data
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+
+definitions:
+  SearchResponseBody:
+    type: object
+    properties: 
+      nfl_players:
+        type: array
+        items:
+          $ref: "#/definitions/NFLPlayer"
+
+  NFLPlayer:
+      type: object
+      properties:
+        player:
+          type: string
+          x-omitempty: false
+          x-nullable: false
+        team:
+          type: string
+          x-omitempty: false
+          x-nullable: false
+        pos:
+          type: string
+          x-omitempty: false
+          x-nullable: false
+        att:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        att_per_game:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        ydsclean:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        avg:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        yds_per_game:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        td:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        lng:
+          type: string
+          x-omitempty: false
+          x-nullable: false
+        first:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        first_percentage:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        twenty_plus:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        fourty_plus:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+        fum:
+          type: number
+          x-omitempty: false
+          x-nullable: false
+  BadRequestResponse:
+    type: object
+    properties:
+      error:
+        type: string
+        description: "Optional error message for non-fatal errors."
